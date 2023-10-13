@@ -18,14 +18,26 @@ links = soup.find_all('a', attrs={"href": re.compile("^/wiki/")},limit=150)
 limite_inferior = 64
 
 #lista limpia
-terminos = list()
+terminos_mamiferos = list()
 
 #obtengo el texto y lo cargo en la lista
 for i in links[limite_inferior:]:
-    terminos.append(i.get_text())
+    terminos_mamiferos.append(i.get_text())
     
-print(terminos)
+
 
 #el prefijo para siguientes busquedas 
 prefijo_wiki = "https://es.wikipedia.org/wiki/"
     
+#nodo en el centro del grafico, de el va a salir cuatro vertices 
+nodo_cetral = ["mamiferos"]
+
+#4 nodos que estan conectados con mamiferos
+nodos_internos = [terminos_mamiferos[1], terminos_mamiferos[2], terminos_mamiferos[7], terminos_mamiferos[18]]
+
+#lista con nodos totales del grafo
+nodos = nodo_cetral + nodos_internos
+
+#usar sets
+
+print(nodos)
