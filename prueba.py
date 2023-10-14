@@ -13,9 +13,10 @@ class Nodo():
         self.parsePage(nombre)
     
     #metodo que va a fijarse si dos nodos tienen conexion, osea si uno referencia al otro
-    def checkConn(self, nodo):
-        if self.nombre in nodo.palabras:
-            self.addEdge(nodo)  # Habria que hacer un ToUpper para que el ckeckeo no sea caps sensitive
+    def estaEn(self, nodo):
+        if self.nombre.upper() in nodo.palabras:
+            self.addEdge(nodo)
+            
      
     #metodo que me creo una arista con otro nodo que le pase por parametro       
     def addEdge(self, nodo):
@@ -32,7 +33,7 @@ class Nodo():
         prefijo_wiki = "https://es.wikipedia.org/wiki/"
         
         url = prefijo_wiki + nombre
-        #obtengo la pagina de mamiferos
+        #obtengo la pagina 
         page = rq.get(url)
 
         #la parseo en un objeto
@@ -41,13 +42,13 @@ class Nodo():
         #armo una lista con los terminos que yo quiero, en este caso todos los links que refertencian a otra pagina dentro de la wikipedia
         links = soup.find_all('a', attrs={"href": re.compile("^/wiki/")},limit=200)
 
-        #selecciono a partir de que links me va a interesar revisar
+        #selecciono a partir de que links me va a interesar revisar (es arbitrario para reducir los link que no me importan)
         limite_inferior = 64
 
 
         #obtengo el texto y lo cargo en el set
         for i in links[limite_inferior:]:
-            self.palabras.add(i.get_text())
+            self.palabras.add(i.get_text().upper())
         
         #remuevo los resultados vacios
         try:
@@ -55,6 +56,13 @@ class Nodo():
         except KeyError:
             pass
             
+
+
+# creo dos nodos de prueba
+mamiferos = Nodo("mamiferos")
+x = Nodo("x")
+
+
 
 
 
