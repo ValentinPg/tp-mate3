@@ -2,6 +2,7 @@ import random
 import requests as rq
 from bs4 import BeautifulSoup
 import re
+import networkx as nx
 
 #clases
 class Nodo():
@@ -14,13 +15,13 @@ class Nodo():
     
     #metodo que va a fijarse si dos nodos tienen conexion, osea si uno referencia al otro
     def estaEn(self, nodo):
-        if self.nombre.upper() in nodo.palabras:
+        if self.nombre.lower() in nodo.palabras:
             self.addEdge(nodo)
             
      
     #metodo que me creo una arista con otro nodo que le pase por parametro       
     def addEdge(self, nodo):
-        pass
+        return (self.nombre, nodo.nombre)
     
     #metodo que me crea el nodo en un grafico
     def createNode(self):
@@ -40,69 +41,86 @@ class Nodo():
         soup = BeautifulSoup(page.content, "html.parser")
         
         #armo una lista con los terminos que yo quiero, en este caso todos los links que refertencian a otra pagina dentro de la wikipedia
-        links = soup.find_all('a', attrs={"href": re.compile("^/wiki/")},limit=200)
+        links = soup.find_all('a', attrs={"href": re.compile("^/wiki/")})
+
+        print(links)
 
         #selecciono a partir de que links me va a interesar revisar (es arbitrario para reducir los link que no me importan)
-        limite_inferior = 64
+        limite_inferior = 0
 
 
         #obtengo el texto y lo cargo en el set
         for i in links[limite_inferior:]:
-            self.palabras.add(i.get_text().upper())
+            self.palabras.add(i.get_text().lower().replace(" ","_"))
+            
         
         #remuevo los resultados vacios
         try:
             self.palabras.remove('')
         except KeyError:
             pass
+        
+        try:
+            self.palabras.remove("limitación_de_responsabilidad")
+        except KeyError:
+            pass
+        
+        try:
+            self.palabras.remove("acerca_de_wikipedia")
+        except KeyError:
+            pass
+        
             
 
 
-# creo dos nodos de prueba
-mamiferos = Nodo("mamiferos")
-x = Nodo("x")
+# # creo dos nodos de prueba
+# # mamiferos = Nodo("mamiferos")
+# # x = Nodo("x")
+
+# #lista que va a tener todos los nodos del grafico
+# nodos = list()
+# # lista que contiene los vertices
+# vertices = list()
+
+# #nodo central
+# nodo_maestro = Nodo("mamiferos")
+# # lo agrego a la lista con todos los nodos
+# nodos.append(nodo_maestro)
 
 
+# # obtengo un nodo aleatorio
+# nodo = Nodo(list(nodo_maestro.palabras)[random.randrange(0,len(nodo_maestro.palabras))])
+# nodo_anterior = nodo_maestro
 
-
-
-
-# testeo, tomo una palabra random y veo cuanto tarda en accedr y parsearla 
-
-# lista = []
-# root = Nodo("mamiferos")
-
-# while len(root.palabras) > 0:
-#     nodo = Nodo(random.choice(list(root.palabras)))
-#     if nodo.nombre in lista:
-#         print("REPETIDO----")
-#         continue
+# for i in range(10):
+#     print(nodo.nombre)
+#     if (len(nodo.palabras)>0):
+#         vertices.append((nodo_anterior.nombre, nodo.nombre))
+#         nodo_anterior = nodo
+#         nodos.append(nodo)
+#         nodo = Nodo(list(nodo.palabras)[random.randrange(0,len(nodo.palabras))]) # cambiar nodo_maestro por nodo
 #     else:
-#         lista.append(nodo.nombre)
-#         print(nodo.nombre)
+#         nodo =  Nodo(random.choice(list(nodo_anterior.palabras)))
+
+# for i in nodos:
+#     print(i.nombre)
     
 
 
-    
+# for i in nodos:
+#     for j in nodos:
+#         t = i.estaEn(j)
+#         if t != None:
+#             vertices.append(t)
+        
+# print(vertices)
 
 
 
+# grafo = nx.Graph()
 
+# grafo.add_nodes_from(nodos)
+# grafo.add_edges_from(vertices)
+# nx.draw(grafo)
 
-
-
-
-
-    
-# #nodo en el centro del grafico, de el va a salir cuatro vertices 
-# nodo_cetral = ["mamiferos"]
-
-# #4 nodos que estan conectados con mamiferos
-# nodos_internos = [terminos_mamiferos[1], terminos_mamiferos[2], terminos_mamiferos[7], terminos_mamiferos[18]]
-
-# #lista con nodos totales del grafo
-# nodos = nodo_cetral + nodos_internos
-
-# #usar sets
-
-# print(nodos)
+Nodo("mamiferos")
